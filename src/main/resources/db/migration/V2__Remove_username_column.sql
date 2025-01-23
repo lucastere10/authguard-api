@@ -1,0 +1,3 @@
+-- V2__Remove_username_column.sql
+ALTER TABLE USER_DATA
+DROP COLUMN USER_USERNAME;
