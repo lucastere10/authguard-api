@@ -8,7 +8,7 @@ import org.springframework.security.web.util.UrlUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import br.com.lucascaldas.authguard.infrastructure.service.ResendEmailService;
+import br.com.lucascaldas.authguard.infrastructure.service.EmailService;
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,11 +21,11 @@ public class EmailOneTimeTokenGenerationSuccessHandler implements OneTimeTokenGe
                         "/login/ott");
 
         @Autowired
-        private ResendEmailService emailService;
+        private EmailService emailService;
 
         @Override
         public void handle(HttpServletRequest request, HttpServletResponse response, OneTimeToken oneTimeToken)
-                        throws IOException, ServletException, java.io.IOException {
+                        throws ServletException, IOException, java.io.IOException {
                 UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(UrlUtils.buildFullRequestUrl(request))
                                 .replacePath(request.getContextPath())
                                 .replaceQuery(null)

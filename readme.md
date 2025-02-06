@@ -1,13 +1,13 @@
 # 🛡️ AuthGuard Authentication System
 
-AuthGuard is a modern authentication system that supports multiple authentication methods, including **social login**, **email token verification**, and **QR code authentication**. It provides a seamless and secure user experience across web and mobile platforms.
+AuthGuard is a tech demo project with the intend to build a modern authentication system that supports multiple authentication methods, including **social login**, **email token verification**, and **QR code authentication**. It provides a seamless and secure user experience across web and mobile platforms.
 
 ---
 
 ## 🚀 Features
 - 🔐 **Social Login** via Google OAuth  
-- ✉️ **Email Token Authentication** for passwordless login  
-- 📲 **QR Code-Based Authentication** to authenticate web sessions via mobile  
+- ✉️ **Email Token Authentication** for passwordless login with Resend and Spring Security One Time Token
+- 📲 **QR Code-Based Authentication** to authenticate web sessions via mobile with TOTP
 - 🔄 **JWT-Based Session Management**  
 
 ---

@@ -13,33 +13,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.lucascaldas.authguard.api.dto.EmailRequestDTO;
-import br.com.lucascaldas.authguard.infrastructure.service.ResendEmailService;
+import br.com.lucascaldas.authguard.api.dto.ValidateTokenRequestDTO;
+import br.com.lucascaldas.authguard.infrastructure.service.EmailService;
 
 @RestController
 @RequestMapping("/api/email")
 public class EmailController {
 
     @Autowired
-    ResendEmailService resendEmailService;
+    EmailService resendEmailService;
 
     @Autowired
     OneTimeTokenService oneTimeTokenService;
 
-    @PostMapping("/send")
-    public ResponseEntity<String> sendEmail(@RequestBody EmailRequestDTO emailRequest) throws IOException {
-        resendEmailService.sendEmail(emailRequest.getDestinatario(), "123");
-        return ResponseEntity.ok("One-Time Token generated and sent via email.");
-    }
-
     @PostMapping("/send-token")
-    public ResponseEntity<String> sendOneTimeToken(@RequestBody EmailRequestDTO emailRequest) throws IOException {
+    public ResponseEntity<OneTimeToken> sendOneTimeToken(@RequestBody EmailRequestDTO emailRequest) throws IOException {
+        OneTimeToken token = resendEmailService.sendEmailWithToken(emailRequest.getDestinatario());
+        return ResponseEntity.ok(token);
+    }
 
-        GenerateOneTimeTokenRequest request = new GenerateOneTimeTokenRequest(emailRequest.getDestinatario());
-        OneTimeToken token = oneTimeTokenService.generate(request);
-
-        resendEmailService.sendEmail(emailRequest.getDestinatario(), token.getTokenValue());
-
+    @PostMapping("/validate")
+    public ResponseEntity<String> senddTimeToken(@RequestBody ValidateTokenRequestDTO dto) throws IOException {
+        resendEmailService.validateToken(dto.getToken());
         return ResponseEntity.ok("One-Time Token generated and sent via email.");
     }
+
 
 }

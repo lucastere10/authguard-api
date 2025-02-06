@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:15
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: authguard-api
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: authguard-api
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PASSWORD: password
+      API_KEY_SECRET: secret
+      GOOGLE_CLIENT_ID: client_secret
+      RESEND_API_KEY: resend_secret
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:

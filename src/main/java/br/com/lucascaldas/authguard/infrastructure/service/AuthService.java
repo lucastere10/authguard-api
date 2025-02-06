@@ -10,6 +10,9 @@ import br.com.lucascaldas.authguard.api.dto.LoginRequestDTO;
 import br.com.lucascaldas.authguard.api.dto.LoginResponseDTO;
 import br.com.lucascaldas.authguard.core.security.JwtUtils;
 import br.com.lucascaldas.authguard.domain.enums.UserType;
+import br.com.lucascaldas.authguard.domain.exception.BadRequestException;
+import br.com.lucascaldas.authguard.domain.exception.InternalServerErrorException;
+import br.com.lucascaldas.authguard.domain.exception.NotFoundException;
 import br.com.lucascaldas.authguard.domain.models.User;
 import br.com.lucascaldas.authguard.domain.repository.UserRepository;
 
@@ -50,13 +53,13 @@ public class AuthService {
                     payload = validateGithubToken(token);
                     break;
                 default:
-                    throw new IllegalArgumentException("Unsupported provider: " + provider);
+                    throw new BadRequestException("Unsupported provider: " + provider) {};
             }
 
             // Extract the email from the payload
             String email = (String) payload.get("email");
             if (email == null || email.isEmpty()) {
-                throw new IllegalArgumentException("Failed to retrieve email from provider");
+                throw new NotFoundException("Email não encontrado") {};
             }
 
             User user = userRepository.findByEmail(email)
@@ -73,7 +76,7 @@ public class AuthService {
 
             return response;
         } catch (Exception e) {
-            throw new RuntimeException("Internal Server Error", e);
+            throw new InternalServerErrorException("Internal Server Error: " + e) {};
         }
     }
 
@@ -88,10 +91,10 @@ public class AuthService {
                 GoogleIdToken.Payload payload = idToken.getPayload();
                 return payload;
             } else {
-                throw new IllegalArgumentException("Invalid Google token");
+                throw new NotFoundException("Invalid Google token") {};
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to validate Google token", e);
+            throw new BadRequestException("Failed to validate Google token") {};
         }
     }
 
@@ -109,7 +112,7 @@ public class AuthService {
         // Ensure the response contains necessary fields
         Map<String, Object> user = response.getBody();
         if (user == null || !user.containsKey("email")) {
-            throw new IllegalArgumentException("Invalid GitHub token");
+            throw new NotFoundException("Invalid GitHub token") {};
         }
         return user;
     }

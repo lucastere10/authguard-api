@@ -4,7 +4,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.ott.GenerateOneTimeTokenRequest;
+import org.springframework.security.authentication.ott.OneTimeToken;
+import org.springframework.security.authentication.ott.OneTimeTokenAuthenticationToken;
+import org.springframework.security.authentication.ott.OneTimeTokenService;
 import org.springframework.stereotype.Service;
 
 import com.resend.Resend;
@@ -16,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class ResendEmailService {
+public class EmailService {
 
     @Value("${resend.api.key}")
     private String apiKey;
@@ -24,7 +29,29 @@ public class ResendEmailService {
     @Value("${app.base.url.validation}")
     private String baseUrl;
 
+    @Autowired
+    private OneTimeTokenService oneTimeTokenService;
+    @Autowired
+    private OneTimeTokenAuthenticationToken auth_token;
+
     private static final String TEMPLATE_PATH = "src/main/resources/templates/shopsession-regular.html";
+
+    public OneTimeToken sendEmailWithToken(String to) throws IOException {
+        GenerateOneTimeTokenRequest request = new GenerateOneTimeTokenRequest(to);
+        OneTimeToken token = oneTimeTokenService.generate(request);
+
+        OneTimeTokenAuthenticationToken tokenAuth = new OneTimeTokenAuthenticationToken(token.getTokenValue());
+        OneTimeToken tokenResult = oneTimeTokenService.consume(tokenAuth);
+
+        OneTimeTokenAuthenticationToken result = OneTimeTokenAuthenticationToken.authenticated("3123123123", null);
+        
+        System.out.println(tokenResult);
+
+        return token;
+
+
+        //sendEmail(to, token.getTokenValue());
+    }
 
     public void sendEmail(String to, String token) throws IOException {
 
@@ -47,5 +74,9 @@ public class ResendEmailService {
         } catch (ResendException e) {
             log.error("Error sending email", e);
         }
+    }
+
+    public void validateToken(OneTimeTokenAuthenticationToken token) {
+        oneTimeTokenService.consume(token);
     }
 }

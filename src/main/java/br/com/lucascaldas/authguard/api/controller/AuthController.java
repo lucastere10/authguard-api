@@ -36,7 +36,7 @@ public class AuthController {
     }
 
     @PostMapping("/totp/validate")
-    public String verify(@RequestBody String code) {
+    public ResponseEntity<Void> verify(@RequestBody String code) {
         return totpService.verify(code);
     }
 

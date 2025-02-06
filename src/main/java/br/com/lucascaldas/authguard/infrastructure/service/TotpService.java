@@ -2,8 +2,10 @@ package br.com.lucascaldas.authguard.infrastructure.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.ResponseEntity;
 
 import br.com.lucascaldas.authguard.infrastructure.utils.DataUriForImage;
+import br.com.lucascaldas.authguard.domain.exception.AccessDeniedException;
 
 import org.springframework.stereotype.Service;
 
@@ -57,7 +59,7 @@ public class TotpService {
                 qrGenerator.getImageMimeType());
     }
 
-    public String verify(@RequestParam String code) {
+    public ResponseEntity<Void> verify(@RequestParam String code) {
         log.info("Secret: " + secret);
         log.info("Code: " + code);
 
@@ -68,9 +70,10 @@ public class TotpService {
 
         log.info("Is valid: " + isValid);
         if (isValid) {
-            return "CORRECT CODE";
+            return ResponseEntity.ok().build();
+        } else {
+            throw new AccessDeniedException("Invalid code");
         }
-        return "INCORRECT CODE";
     }
 
     public String verifyMobile() throws CodeGenerationException {
