@@ -8,6 +8,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 
+import br.com.lucascaldas.authguard.domain.exception.InternalServerErrorException;
 import br.com.lucascaldas.authguard.domain.models.User;
 
 import java.time.Instant;
@@ -30,7 +31,7 @@ public class JwtUtils {
                     .sign(algorithm);
 
         } catch (JWTCreationException exception) {
-            throw new RuntimeException("Deu ruim no token", exception);
+            throw new InternalServerErrorException("Deu ruim no token: " + exception){};
         }
     }
 
