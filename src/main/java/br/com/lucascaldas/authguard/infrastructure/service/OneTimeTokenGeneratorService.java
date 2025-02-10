@@ -1,8 +1,5 @@
 package br.com.lucascaldas.authguard.infrastructure.service;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Random;
 import java.io.IOException;
@@ -47,7 +44,10 @@ public class OneTimeTokenGeneratorService {
 
         try {
             byte[] qrCodeImage = QRCodeGenerator.getQRCodeImage(qrCodeUrl, 250, 250);
-            return Base64.getEncoder().encodeToString(qrCodeImage);
+            // Encode the image to Base64
+            String base64Image = Base64.getEncoder().encodeToString(qrCodeImage);
+            // Prepend the data URI header so browsers can render it correctly
+            return "data:image/png;base64," + base64Image;
         } catch (WriterException | IOException e) {
             log.error("Error generating QR Code image", e);
             return null;
