@@ -15,6 +15,7 @@ import br.com.lucascaldas.authguard.domain.exception.InternalServerErrorExceptio
 import br.com.lucascaldas.authguard.domain.exception.NotFoundException;
 import br.com.lucascaldas.authguard.domain.models.User;
 import br.com.lucascaldas.authguard.domain.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
@@ -25,6 +26,7 @@ import java.util.Collections;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class AuthService {
 
     @Autowired

@@ -14,7 +14,6 @@ import dev.samstevens.totp.code.CodeVerifier;
 import dev.samstevens.totp.code.DefaultCodeGenerator;
 import dev.samstevens.totp.code.DefaultCodeVerifier;
 import dev.samstevens.totp.code.HashingAlgorithm;
-import dev.samstevens.totp.exceptions.CodeGenerationException;
 import dev.samstevens.totp.exceptions.QrGenerationException;
 import dev.samstevens.totp.qr.QrData;
 import dev.samstevens.totp.qr.QrDataFactory;
@@ -24,9 +23,9 @@ import dev.samstevens.totp.time.SystemTimeProvider;
 import dev.samstevens.totp.time.TimeProvider;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
-public class TotpService {
+@Slf4j
+public class TimedOneTimePasswordService {
 
     @Autowired
     private SecretGenerator secretGenerator;
@@ -39,8 +38,8 @@ public class TotpService {
 
     private String secret;
 
-    public String setupDevice() throws QrGenerationException {
-        // Generate a new secret
+    public String setupTwoFactor() throws QrGenerationException {
+
         secret = secretGenerator.generate();
 
         QrData data = qrDataFactory.newBuilder()
@@ -74,21 +73,6 @@ public class TotpService {
         } else {
             throw new AccessDeniedException("Invalid code");
         }
-    }
-
-    public String verifyMobile() throws CodeGenerationException {
-        log.info("Secret: " + secret);
-
-        TimeProvider timeProvider = new SystemTimeProvider();
-        long counter = Math.floorDiv(timeProvider.getTime(), 30);
-
-        CodeGenerator codeGenerator = new DefaultCodeGenerator();
-        String generatedCode = codeGenerator.generate(secret, counter);
-        
-        log.info("Generated Code: " + generatedCode);
-        log.info("Counter: " + counter);
-        
-        return generatedCode;
     }
 
 }

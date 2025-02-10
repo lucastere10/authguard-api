@@ -23,6 +23,8 @@ services:
       API_KEY_SECRET: secret
       GOOGLE_CLIENT_ID: client_secret
       RESEND_API_KEY: resend_secret
+      QRCODE_JWT_SECRET: qrcode_jwt_secret
+      SOCKET_SERVER_PORT: 8888
     ports:
       - "8080:8080"
 

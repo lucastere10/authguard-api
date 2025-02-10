@@ -5,9 +5,10 @@ import org.springframework.web.bind.annotation.*;
 
 import br.com.lucascaldas.authguard.api.dto.LoginRequestDTO;
 import br.com.lucascaldas.authguard.api.dto.LoginResponseDTO;
+import br.com.lucascaldas.authguard.api.dto.OTTRequestDTO;
 import br.com.lucascaldas.authguard.infrastructure.service.AuthService;
-import br.com.lucascaldas.authguard.infrastructure.service.TotpService;
-import dev.samstevens.totp.exceptions.CodeGenerationException;
+import br.com.lucascaldas.authguard.infrastructure.service.OneTimeTokenGeneratorService;
+import br.com.lucascaldas.authguard.infrastructure.service.TimedOneTimePasswordService;
 import dev.samstevens.totp.exceptions.QrGenerationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,10 @@ public class AuthController {
     private AuthService authService;
 
     @Autowired
-    private TotpService totpService;
+    private TimedOneTimePasswordService totpService;
+
+    @Autowired
+    private OneTimeTokenGeneratorService ottService;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> authenticateWithProvider(@RequestBody LoginRequestDTO request) {
@@ -32,7 +36,7 @@ public class AuthController {
 
     @GetMapping("/totp/setup")
     public String setupTOTP() throws QrGenerationException {
-        return totpService.setupDevice();
+        return totpService.setupTwoFactor();
     }
 
     @PostMapping("/totp/validate")
@@ -40,10 +44,16 @@ public class AuthController {
         return totpService.verify(code);
     }
 
-    @GetMapping("/totp/mobile")
-    @CrossOrigin(origins = "http://localhost:3000/")
-    public String verifyMobile() throws CodeGenerationException {
-        return totpService.verifyMobile();
+    @PostMapping("/ott/generate")
+    public ResponseEntity<String> generateOTT() {
+        String ott = ottService.generateOTT();
+        return ResponseEntity.ok(ott);
+    }
+
+    @PostMapping("/ott/extract")
+    public ResponseEntity<String> extractSecretAndLabel(@RequestBody OTTRequestDTO dto) {
+        String result = ottService.getRoomAndLabelFromQrCode(dto.getToken());
+        return ResponseEntity.ok(result);
     }
 
 }
