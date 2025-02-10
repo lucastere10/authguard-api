@@ -31,6 +31,7 @@ public class EmailService {
 
     @Autowired
     private OneTimeTokenService oneTimeTokenService;
+    
     @Autowired
     private OneTimeTokenAuthenticationToken auth_token;
 
@@ -43,14 +44,12 @@ public class EmailService {
         OneTimeTokenAuthenticationToken tokenAuth = new OneTimeTokenAuthenticationToken(token.getTokenValue());
         OneTimeToken tokenResult = oneTimeTokenService.consume(tokenAuth);
 
-        OneTimeTokenAuthenticationToken result = OneTimeTokenAuthenticationToken.authenticated("3123123123", null);
-        
-        System.out.println(tokenResult);
+        log.info(tokenResult.toString());
+
+        sendEmail(to, token.getTokenValue());
 
         return token;
 
-
-        //sendEmail(to, token.getTokenValue());
     }
 
     public void sendEmail(String to, String token) throws IOException {

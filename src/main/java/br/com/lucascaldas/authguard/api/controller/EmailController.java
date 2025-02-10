@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.ott.GenerateOneTimeTokenRequest;
 import org.springframework.security.authentication.ott.OneTimeToken;
 import org.springframework.security.authentication.ott.OneTimeTokenService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,7 +32,7 @@ public class EmailController {
     }
 
     @PostMapping("/validate")
-    public ResponseEntity<String> senddTimeToken(@RequestBody ValidateTokenRequestDTO dto) throws IOException {
+    public ResponseEntity<String> sendTimeToken(@RequestBody ValidateTokenRequestDTO dto)  {
         resendEmailService.validateToken(dto.getToken());
         return ResponseEntity.ok("One-Time Token generated and sent via email.");
     }
