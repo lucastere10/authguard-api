@@ -32,5 +32,17 @@ public class SocketIOEventHandler {
             log.info("Socket " + socket.getSessionId() + " joined room: " + roomId);
         });
 
+        // Listen for an "authenticate" event from the client
+        server.addEventListener("authenticate", String.class, (socket, email, ackSender) -> {
+            
+        });
+
+        // Listen for a "sendMessage" event from the client
+        server.addEventListener("sendMessage", String.class, (socket, message, ackSender) -> {
+            String roomId = socket.getAllRooms().iterator().next(); // Assuming the socket is in one room
+            server.getRoomOperations(roomId).sendEvent("message", message);
+            log.info("Socket " + socket.getSessionId() + " sent message to room " + roomId + ": " + message);
+        });
     }
+
 }
