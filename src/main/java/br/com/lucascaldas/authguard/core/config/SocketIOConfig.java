@@ -17,6 +17,7 @@ public class SocketIOConfig {
     @Bean
     public SocketIOServer socketIOServer() {
         Configuration config = new Configuration();
+        config.setHostname("localhost");
         config.setPort(port);
         // Optionally, set additional configuration (e.g., authorization, ping timeout, etc.)
         return new SocketIOServer(config);

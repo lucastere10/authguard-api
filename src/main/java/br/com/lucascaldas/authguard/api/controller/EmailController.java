@@ -26,16 +26,15 @@ public class EmailController {
     OneTimeTokenService oneTimeTokenService;
 
     @PostMapping("/send-token")
-    public ResponseEntity<OneTimeToken> sendOneTimeToken(@RequestBody EmailRequestDTO emailRequest) throws IOException {
-        OneTimeToken token = resendEmailService.sendEmailWithToken(emailRequest.getDestinatario());
-        return ResponseEntity.ok(token);
+    public ResponseEntity<Void> sendOneTimeToken(@RequestBody EmailRequestDTO emailRequest) throws IOException {
+        resendEmailService.sendEmailWithToken(emailRequest.getDestinatario());
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/validate")
-    public ResponseEntity<String> sendTimeToken(@RequestBody ValidateTokenRequestDTO dto)  {
+    public ResponseEntity<String> sendTimeToken(@RequestBody ValidateTokenRequestDTO dto) {
         resendEmailService.validateToken(dto.getToken());
         return ResponseEntity.ok("One-Time Token generated and sent via email.");
     }
-
 
 }

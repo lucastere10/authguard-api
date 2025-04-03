@@ -1,8 +1,6 @@
 package br.com.lucascaldas.authguard.infrastructure.service;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +9,10 @@ import org.springframework.security.authentication.ott.OneTimeToken;
 import org.springframework.security.authentication.ott.OneTimeTokenAuthenticationToken;
 import org.springframework.security.authentication.ott.OneTimeTokenService;
 import org.springframework.stereotype.Service;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.StreamUtils;
+import java.nio.charset.StandardCharsets;
 
 import com.resend.Resend;
 import com.resend.core.exception.ResendException;
@@ -31,32 +33,27 @@ public class EmailService {
 
     @Autowired
     private OneTimeTokenService oneTimeTokenService;
-    
-    @Autowired
-    private OneTimeTokenAuthenticationToken auth_token;
 
-    private static final String TEMPLATE_PATH = "src/main/resources/templates/shopsession-regular.html";
+    private static final String TEMPLATE_CLASSPATH = "templates/shopsession-regular.html";
 
-    public OneTimeToken sendEmailWithToken(String to) throws IOException {
+    public Void sendEmailWithToken(String to) throws IOException {
         GenerateOneTimeTokenRequest request = new GenerateOneTimeTokenRequest(to);
         OneTimeToken token = oneTimeTokenService.generate(request);
 
-        OneTimeTokenAuthenticationToken tokenAuth = new OneTimeTokenAuthenticationToken(token.getTokenValue());
-        OneTimeToken tokenResult = oneTimeTokenService.consume(tokenAuth);
-
-        log.info(tokenResult.toString());
+        log.info(token.toString());
 
         sendEmail(to, token.getTokenValue());
 
-        return token;
-
+        return null;
     }
 
     public void sendEmail(String to, String token) throws IOException {
-
         Resend resend = new Resend(apiKey);
 
-        String htmlTemplate = new String(Files.readAllBytes(Paths.get(TEMPLATE_PATH)), "UTF-8");
+        // Load the HTML template from the classpath
+        Resource resource = new ClassPathResource(TEMPLATE_CLASSPATH);
+        String htmlTemplate = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
+
         String tokenLink = baseUrl + "?token=" + token;
         String htmlContent = htmlTemplate.replace("{{validation_token}}", tokenLink);
 
